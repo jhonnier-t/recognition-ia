@@ -17,11 +17,16 @@ services:
     depends_on:
       - qdrant
     environment:
-      - QDRANT_HOST=${VECTOR_DB_PROVIDER}
+      - QDRANT_HOST=qdrant
       - QDRANT_PORT=6333
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
       - GEMINI_MODEL=${GEMINI_MODEL}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
       - VECTOR_DB_PROVIDER=${VECTOR_DB_PROVIDER}
+      - EMBEDDINGS_MODEL=${EMBEDDINGS_MODEL}
+      - SMTP_SERVER=${SMTP_SERVER}
+      - SMTP_PORT=${SMTP_PORT}
+      - SENDER_EMAIL=${SENDER_EMAIL}
+      - SENDER_PASSWORD=${SENDER_PASSWORD}
 
 volumes:
   qdrant_storage:
