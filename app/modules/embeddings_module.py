@@ -20,4 +20,4 @@ def create_segments_point(segments):
             )
         return points
     except Exception as e:
-        ErrorHandler.handle_embedding_error(e)
+        raise ErrorHandler.handle_embedding_error(e)

@@ -13,10 +13,10 @@ def create_collection():
                 vectors_config=VectorParams(size=384, distance=Distance.COSINE),
             )
     except Exception as e:
-        ErrorHandler.handle_qdrant_error(e, context="create_collection")
+        raise ErrorHandler.handle_qdrant_error(e, context="create_collection")
 
 def create_points_vectorial_db(points):
     try:
         client_qdrant.upsert(collection_name=COLLECTION, points=points)
     except Exception as e:
-        ErrorHandler.handle_qdrant_error(e, context="create_points_vectorial")
+        raise ErrorHandler.handle_qdrant_error(e, context="create_points_vectorial")

@@ -12,21 +12,23 @@ router = APIRouter()
 @router.post("/upload")
 async def upload_audio(audio: UploadFile = File(...)):
     try:
-        segments = transcribe_with_gemini(audio)
+        segments = await transcribe_with_gemini(audio)
         points = create_segments_point(segments)
         create_points_vectorial_db(points)
         email_notifier.send_email(
-            subject=f"Audio ${audio.filename} transcribed and segmented",
+            subject=f"Audio {audio.filename} transcribed and segmented",
             body="Summarization successful",
             to_emails=TO_EMAILS
         )
-        return JSONResponse(content={"audio":f"Audio ${audio.filename} transcribed and segmented. Also saved in db"},
+        return JSONResponse(content={"content":f"Audio {audio.filename} transcribed and segmented. Also saved in db"},
                             status_code=200)
     except Exception as e:
         email_notifier.send_email(
-            subject="Gemini Error: Summarization failed",
-            body=f"An error occurred while trying to summarize audio segment: ${e}",
+            subject="Error: Summarization failed",
+            body=f"An error occurred while trying to summarize audio segment: {e}",
             to_emails=TO_EMAILS
         )
+        return JSONResponse(content={"content":f"Error: Summarization failed {e}"},
+                            status_code=50)
 
 

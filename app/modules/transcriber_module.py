@@ -1,7 +1,5 @@
 import json
 
-from starlette.responses import JSONResponse
-
 from app.config.exception_handler_config import ErrorHandler
 from app.config.gemini_config import model_gemini
 from app.config.env_config import TEXT_PROMPT
@@ -18,6 +16,6 @@ async def transcribe_with_gemini(audio):
             TEXT_PROMPT,
             audio_part
         ])
-        return JSONResponse(content= json.loads(response.text) )
+        return json.loads(response.text)
     except Exception as e:
-        ErrorHandler.handle_gemini_error(e, context="transcribe_with_gemini")
+        raise ErrorHandler.handle_gemini_error(e, context="transcribe_with_gemini")
