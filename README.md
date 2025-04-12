@@ -1,27 +1,28 @@
 
 ---
-
-## 🚀 Servicios
-
+## 🚀 DOCS APP RECOGNITION IA
+---
 ### 1. 🔀 FastAPI
 
-- Maneja las rutas de entrada a los microservicios.
-- Implementado con FastAPI.
+- Manages incoming routes to the microservices.
+- Built using FastAPI.
 
 ---
 
-### 2. 🧩 Qdrant Vectorial BD
-- Excelente para usar con textos segmentados (permite payloads estructurados con metadatos).
-- Altamente eficiente para búsqueda semántica.
-- No genera embeddings automáticamente, pero es muy amigable con embeddings generados externamente.
-- Soporte REST y gRPC, integración muy sencilla desde Python.
+### 2. 🧩 Qdrant Vector DB
+
+- Ideal for working with segmented text (supports structured payloads with metadata).
+- Highly efficient for semantic search.
+- Does not generate embeddings automatically, but integrates easily with externally generated ones.
+- REST and gRPC support with straightforward Python integration.
 
 ---
 
 ### 3. 🧠 Recognition Service
 
-- Servicio de IA que realiza tareas de transcripción y diarización de hablantes.
-- Basado la API de gemini, usando el siguiente `Prompt`:
+- AI service for transcription and speaker diarization.
+- Powered by the Gemini API with the following prompt:
+
 ```
 Quiero que transcribas el siguiente audio en español y segmentes por hablante si es posible. 
 Sin texto adicional ni explicaciones. Devuélveme la respuesta en el siguiente formato:
@@ -36,40 +37,59 @@ Return: list[Speaker]
 - Solo devuelve el JSON puro, exactamente con ese formato.
 - No devuelvas el JSON como una cadena (nada de escapado con \").
 ```
----
 
 ### 4. 📡 Webhook Service
 
-- Escucha peticiones POST de servicios externos (ej. Form Google).
-- Procesa el archivo de audio.
+- Listens for external POST requests (e.g., from Google Forms).
+- Processes the audio file accordingly.
 
 ---
 
 ### 5. 📦 Modules
 
-- `email_module` Contiene el envio de email
-- `embeddings_module` Contiene la vectorización con (texto, metadatos, vectores) embeddings 
-- `transcriber_module` Contiene la transcipcion y segementacion con Gemini
-- `vectorial_db_module` Contiene el guardado de los vectores con Qdrant
+- `email_module`: Handles email sending.
+- `embeddings_module`: Handles vectorization using (text, metadata, vectors).
+- `transcriber_module`: Handles transcription and speaker segmentation with Gemini.
+- `vectorial_db_module`: Handles saving vectors to Qdrant.
 
 ---
 
-### 6. ENV variables
-- GEMINI_API_KEY -> `Obligatorio`, API KEY generada desde Google. (https://aistudio.google.com/app/apikey)
-- GEMINI_MODEL -> `Obligatorio`, ejemplo: `gemini-2.5-pro-exp-03-25`
-- VECTOR_DB_PROVIDER -> `Obligatorio`, ejemplo: `qdrant`
-- EMBEDDINGS_MODEL -> `Obligatorio`, ejemplo: `"all-MiniLM-L6-v2"`
-- SMTP_SERVER -> `Obligatorio`, ejemplo: `smtp.gmail.com`
-- SMTP_PORT -> `Obligatorio`, ejemplo: `587` ,
-- SENDER_EMAIL -> `Obligatorio`, ejemplo: `exmple@gmail.com`
-- SENDER_PASSWORD -> `Obligatorio`, ejemplo: `Password123*`
+### 6. 🔄 n8n Integration
+
+- **Purpose**: Automates workflows across the system.
+- **Use Cases**:
+  - Trigger transcriptions from external sources.
+  - Send automated emails after transcription is completed.
+  - Route outputs to third-party tools like Slack, Google Sheets, or CRMs.
+- **Deployment**:
+  - Easily deployable via Docker or hosted version.
+  - Can connect to FastAPI endpoints to orchestrate task chains.
+- **Environment Variables** (optional if n8n is used):
+  - `N8N_HOST`: URL or internal service name (e.g., `http://n8n:5678`)
+  - `N8N_API_KEY`: API key for secure communication (if enabled)
+
+---
+
+### 7. ENV Variables
+
+| Variable             | Required | Example                              |
+|----------------------|----------|--------------------------------------|
+| `GEMINI_API_KEY`     | ✅       | `your-google-api-key`               |
+| `GEMINI_MODEL`       | ✅       | `gemini-2.5-pro-exp-03-25`          |
+| `VECTOR_DB_PROVIDER`| ✅       | `qdrant`                             |
+| `EMBEDDINGS_MODEL`   | ✅       | `all-MiniLM-L6-v2`                   |
+| `SMTP_SERVER`        | ✅       | `smtp.gmail.com`                     |
+| `SMTP_PORT`          | ✅       | `587`                                |
+| `SENDER_EMAIL`       | ✅       | `example@gmail.com`                  |
+| `SENDER_PASSWORD`    | ✅       | `Password123*`                       |
+
+---
 
 ## 🐳 Docker Compose
 
 ```yaml
-version: "3.9"
-
 services:
+
   qdrant:
     image: qdrant/qdrant:latest
     container_name: qdrant_container
@@ -99,6 +119,22 @@ services:
       - SENDER_EMAIL=${SENDER_EMAIL}
       - SENDER_PASSWORD=${SENDER_PASSWORD}
 
+  n8n:
+    image: n8nio/n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=admin123
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - WEBHOOK_TUNNEL_URL=http://localhost:5678
+    volumes:
+      - ./n8n_data:/home/node/.n8n
+
 volumes:
   qdrant_storage:
     name: qdrant_storage
+```
+
