@@ -1,5 +1,7 @@
 from qdrant_client import QdrantClient
 
-client_qdrant = QdrantClient(host="localhost", port=6333)
+from app.config.env_config import QDRANT_HOST
+
+client_qdrant = QdrantClient(host=QDRANT_HOST, port=6333)
 
 
