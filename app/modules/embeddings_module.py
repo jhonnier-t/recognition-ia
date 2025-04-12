@@ -5,12 +5,13 @@ from app.config.embeddings_config import model_embeddings
 from app.config.exception_handler_config import ErrorHandler
 
 
-def create_segments_point(segments):
+def create_segments_point(filename, segments):
     try:
         points = []
         for segment in segments:
             vector = model_embeddings.encode(segment["text"]).tolist()
             payload = {
+                "filename": filename,
                 "speaker": segment["speaker"],
                 "time_stamp": segment["time_stamp"],
                 "text": segment["text"]
