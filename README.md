@@ -12,7 +12,6 @@
 
 - Servicio de IA que realiza tareas de transcripción y diarización de hablantes.
 - Basado la API de gemini, usando las siguientes caracteristicas:
-  - `audio_recognition`
   - `Gemini API`
 
 ### 3. 📡 Webhook Service
@@ -35,16 +34,30 @@
 version: "3.9"
 
 services:
-  gateway:
-    build: ./gateway
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant_container
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+
+  fastapi:
+    build: .
+    container_name: fastapi_container
     ports:
       - "8000:8000"
+    volumes:
+      - .:/app
     depends_on:
-      - recognition
-      - webhook
+      - qdrant
+    environment:
+      - QDRANT_HOST=${VECTOR_DB_PROVIDER}
+      - QDRANT_PORT=6333
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL=${GEMINI_MODEL}
+      - VECTOR_DB_PROVIDER=${VECTOR_DB_PROVIDER}
 
-  recognition:
-    build: ./recognition_service
-
-  webhook:
-    build: ./webhook_service
+volumes:
+  qdrant_storage:
+    name: qdrant_storage
