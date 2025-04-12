@@ -5,6 +5,7 @@ email_notifier = EmailNotifier(
     smtp_server=SMTP_SERVER,
     smtp_port=SMTP_PORT,
     sender_email=SENDER_EMAIL,
-    sender_password=SENDER_PASSWORD
+    sender_password=SENDER_PASSWORD,
+    use_tls=True
 )
 

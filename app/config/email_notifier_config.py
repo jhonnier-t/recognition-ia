@@ -12,13 +12,18 @@ class EmailNotifier:
         self.sender_password = sender_password
         self.use_tls = use_tls
 
-    def send_email(self, subject, body, to_emails):
+    def send_email(self, subject, body, to_emails, html=False):
         try:
             msg = EmailMessage()
             msg["Subject"] = subject
             msg["From"] = self.sender_email
             msg["To"] = ", ".join(to_emails)
-            msg.set_content(body)
+
+            if html:
+                msg.set_content("This email requires an HTML-compatible client.")
+                msg.add_alternative(body, subtype="html")
+            else:
+                msg.set_content(body)
 
             with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
                 if self.use_tls:
@@ -27,6 +32,5 @@ class EmailNotifier:
                 server.send_message(msg)
 
             logger.info(f"Email sent successfully to {to_emails}")
-
         except Exception as e:
             logger.exception(f"Failed to send email: {e}")

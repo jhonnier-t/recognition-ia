@@ -8,12 +8,15 @@
 - Maneja las rutas de entrada a los microservicios.
 - Implementado con FastAPI.
 
+---
 
 ### 2. 🧩 Qdrant Vectorial BD
 - Excelente para usar con textos segmentados (permite payloads estructurados con metadatos).
 - Altamente eficiente para búsqueda semántica.
 - No genera embeddings automáticamente, pero es muy amigable con embeddings generados externamente.
 - Soporte REST y gRPC, integración muy sencilla desde Python.
+
+---
 
 ### 3. 🧠 Recognition Service
 
@@ -33,11 +36,14 @@ Return: list[Speaker]
 - Solo devuelve el JSON puro, exactamente con ese formato.
 - No devuelvas el JSON como una cadena (nada de escapado con \").
 ```
+---
 
 ### 4. 📡 Webhook Service
 
 - Escucha peticiones POST de servicios externos (ej. Form Google).
 - Procesa el archivo de audio.
+
+---
 
 ### 5. 📦 Modules
 
