@@ -1,0 +1,240 @@
+{
+  "name": "recognition_audio_workflow_n8n",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://fastapi:8000/api/webhook/audio/upload",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "email",
+              "value": "={{ $json.email }}"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "audio",
+              "inputDataFieldName": "audio"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          },
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -600,
+        20
+      ],
+      "id": "8806d8bd-e633-4ffd-9b87-f259c7d106c2",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "formTitle": "Recognition APP",
+        "formDescription": "Upload audio for transcribe text and notification to email.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "audio",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "acceptFileTypes": ".ogg, .mp3, .m4v, .wav",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "email",
+              "fieldType": "email",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -820,
+        20
+      ],
+      "id": "e5a1bdc2-228a-4d76-b86e-3baec029ffd5",
+      "name": "On form submission",
+      "webhookId": "35ce854b-aa6a-483d-8203-89b206382061"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b250876d-ea1d-4ad7-a352-9fce585b75bf",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": "200",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -400,
+        20
+      ],
+      "id": "58b8dad5-b03d-4af2-a8ca-3b31df908e43",
+      "name": "If",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        200
+      ],
+      "id": "8689f818-9de2-4b48-81ad-12fb76772889",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "mode": "load",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "audio_test4.ogg_2025041322032",
+          "mode": "id"
+        },
+        "prompt": "Hola",
+        "topK": 10,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.1,
+      "position": [
+        -100,
+        -180
+      ],
+      "id": "55c1edc6-a4fc-4783-80de-1882db77e7f4",
+      "name": "Qdrant Vector Store",
+      "alwaysOutputData": false,
+      "notesInFlow": false,
+      "credentials": {
+        "qdrantApi": {
+          "id": "D4JifWb7ZkwFEyaI",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/embedding-001"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        20
+      ],
+      "id": "247491e2-090a-4c32-b14d-a14fc0f8ebb8",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "DiJKoThwvvzg3zzN",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "95f5a112-f2fe-4101-9cd2-07f85e8a9d39",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "09119e072b265a070a9e89a4f91c8b8a61e1da10e31a28aa9e58f1b9747b70e5"
+  },
+  "id": "z53wqKd2j4FmLnu9",
+  "tags": []
+}
