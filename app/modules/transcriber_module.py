@@ -16,6 +16,7 @@ async def transcribe_with_gemini(audio):
             TEXT_PROMPT,
             audio_part
         ])
-        return json.loads(response.text)
+        segments = json.loads(response.text)
+        return segments
     except Exception as e:
         raise ErrorHandler.handle_gemini_error(e, context="transcribe_with_gemini")

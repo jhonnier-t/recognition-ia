@@ -1,0 +1,49 @@
+# Evita incluir el entorno virtual
+.venv/
+venv/
+
+# Archivos de configuración sensibles
+.env
+
+# Carpetas de logs o datos temporales
+logs/
+n8n_data/
+
+# Archivos de caché y temporales
+__pycache__/
+*.py[cod]
+*.so
+*.log
+*.db
+*.sqlite3
+
+# Archivos y carpetas específicas de herramientas
+.mypy_cache/
+.pytest_cache/
+.cache/
+.ipynb_checkpoints/
+
+# Repositorios de control de versiones
+.git/
+.gitignore
+
+# Archivos del editor/IDE
+*.swp
+*.idea/
+*.vscode/
+*.DS_Store
+
+# Archivos grandes o de prueba
+*.mp3
+*.wav
+*.m4a
+*.ogg
+*.zip
+*.tar
+*.gz
+
+# HTTP test files
+*.http
+
+# Archivos JSON de flujos locales
+n8n_audio_flow.json

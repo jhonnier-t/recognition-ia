@@ -15,6 +15,7 @@ TO_EMAILS=[SENDER_EMAIL]
 
 #CONFIG ENV EMBEDDINGS
 EMBEDDINGS_MODEL = os.getenv("EMBEDDINGS_MODEL", "all-MiniLM-L6-v2")
+API_KEY_HUGGING = os.getenv("API_KEY_HUGGING")
 
 #CONFIG ENV BD VECTORIAL
 QDRANT_HOST = os.getenv("QDRANT_HOST", "localhost")
@@ -25,16 +26,20 @@ COLLECTION = "audio"
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-pro-exp-03-25")
 TEXT_PROMPT = """
-Quiero que transcribas el siguiente audio en español y segmentes por hablante si es posible. 
+Quiero que transcribas el siguiente audio en español y segmentes por hablante si es posible.
 Sin texto adicional ni explicaciones. Devuélveme la respuesta en el siguiente formato:
 
 Speaker = {"speaker": str, "time_stamp": "00:00:00.248", "text": str},
 Return: list[Speaker]
 
 ⚠️ IMPORTANTE:
-- No pongas el JSON dentro de bloques de código (nada de ```json ni ```).
-- No agregues ningún texto antes ni después del JSON.
+
+- No pongas la palabra json dentro de bloques de código (nada de json, ni ).
+- No pongas las comillas hacia atrás ``` en el objeto JSON.
+- No pongas salto de línea \n en el objeto JSON.
+- No devuelvas caracteres de escape (nada de \", \\n, etc).
+- No agregues ningún texto antes ni después del objeto JSON.
 - No expliques nada, ni digas “Aquí tienes la transcripción” ni nada parecido.
-- Solo devuelve el JSON puro, exactamente con ese formato.
-- No devuelvas el JSON como una cadena (nada de escapado con \").
+- Devuelve solo la lista de objetos Speaker como JSON válido, limpio y directo.
+- El texto debe estar sin errores y con puntuación correcta.
 """

@@ -9,7 +9,7 @@ def create_segments_point(filename, segments):
     try:
         points = []
         for segment in segments:
-            vector = model_embeddings.encode(segment["text"]).tolist()
+            vector = model_embeddings.encode(segment["text"])
             payload = {
                 "filename": filename,
                 "speaker": segment["speaker"],
