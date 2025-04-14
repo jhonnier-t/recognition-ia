@@ -67,13 +67,13 @@ Return: list[Speaker]
   - Easily deployable via Docker or hosted version.
   - Can connect to FastAPI endpoints to orchestrate task chains.
 - **Execute workflow**:
-  - `N8N_HOST`: URL for to execute workflow with FORM (e.g., `http://localhost:5678/form/35ce854b-aa6a-483d-8203-89b2063820618`)
+  - `N8N_HOST`: URL for to execute workflow with FORM (e.g., `http://localhost:5678/`)
   - `CONFIGURATION FILE`: Contain config workflow`recognition_audio_workflow_n8n.json`
 
 
 ---
 
-### 7. ENV Variables
+### 7. 🔍 ENV Variables
 
 | Variable             | Required | Example                              |
 |----------------------|----------|--------------------------------------|
