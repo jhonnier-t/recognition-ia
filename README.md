@@ -7,50 +7,52 @@
 - Manages incoming routes to the microservices.
 - Built using FastAPI.
 
+### `Curl is attached for testing the endpoint:`
+```
+curl --location 'http://127.0.0.1:8000/api/webhook/audio/upload' \
+--form 'audio=@"/audio.ogg"' \
+--form 'email="exmple@gmail.com"'
+```
+### `Params`
+- `audio`: Audio file for recognition and segmentation.
+- `email`: Mail to which you will be notified of the execution of the process.
 ---
 
 ### 2. 🧩 Qdrant Vector DB
 
-- Ideal for working with segmented text (supports structured payloads with metadata).
-- Highly efficient for semantic search.
-- Does not generate embeddings automatically, but integrates easily with externally generated ones.
-- REST and gRPC support with straightforward Python integration.
+Rationale Vector DB
+
+- Easy to use and integrates very well with `Python` and `fastembed`.
+- Allows to `store structured metadata` along with each vector (great for storing: filename, timestamp, speaker, etc.).
+- `Open source` and has an official and `lighter Docker image`.
+- Excellent support for semantic search with `metadata filtering`.
+- Compatible with `OpenAI`, `fastembed`, `HuggingFace`, etc. embeddings.
 
 ---
 
-### 3. 🧠 Recognition Service
+### 3. 🧠 Gemini API
 
 - AI service for transcription and speaker diarization.
 - Powered by the Gemini API with the following prompt:
 
 ```
-Quiero que transcribas el siguiente audio en español y segmentes por hablante si es posible. 
+Quiero que transcribas el siguiente audio en español y segmentes por hablante si es posible.
 Sin texto adicional ni explicaciones. Devuélveme la respuesta en el siguiente formato:
 
 Speaker = {"speaker": str, "time_stamp": "00:00:00.248", "text": str},
 Return: list[Speaker]
 
 ⚠️ IMPORTANTE:
-- No pongas el JSON dentro de bloques de código (nada de ```json ni ```).
-- No agregues ningún texto antes ni después del JSON.
+
+- No pongas la palabra json dentro de bloques de código (nada de json, ni ).
+- No pongas las comillas hacia atrás ``` en el objeto JSON.
+- No pongas salto de línea \n en el objeto JSON.
+- No devuelvas caracteres de escape (nada de \", \\n, etc).
+- No agregues ningún texto antes ni después del objeto JSON.
 - No expliques nada, ni digas “Aquí tienes la transcripción” ni nada parecido.
-- Solo devuelve el JSON puro, exactamente con ese formato.
-- No devuelvas el JSON como una cadena (nada de escapado con \").
+- Devuelve solo la lista de objetos Speaker como JSON válido, limpio y directo.
+- El texto debe estar sin errores y con puntuación correcta.
 ```
-
-### 4. 📡 Webhook Service
-
-- Listens for external POST requests (e.g., from Google Forms).
-- Processes the audio file accordingly.
-
----
-
-### 5. 📦 Modules
-
-- `email_module`: Handles email sending.
-- `embeddings_module`: Handles vectorization using (text, metadata, vectors).
-- `transcriber_module`: Handles transcription and speaker segmentation with Gemini.
-- `vectorial_db_module`: Handles saving vectors to Qdrant.
 
 ---
 
@@ -64,9 +66,10 @@ Return: list[Speaker]
 - **Deployment**:
   - Easily deployable via Docker or hosted version.
   - Can connect to FastAPI endpoints to orchestrate task chains.
-- **Environment Variables** (optional if n8n is used):
-  - `N8N_HOST`: URL or internal service name (e.g., `http://n8n:5678`)
-  - `N8N_API_KEY`: API key for secure communication (if enabled)
+- **Execute workflow**:
+  - `N8N_HOST`: URL for to execute workflow with FORM (e.g., `http://localhost:5678/form/35ce854b-aa6a-483d-8203-89b2063820618`)
+  - `CONFIGURATION FILE`: Contain config workflow`recognition_audio_workflow_n8n.json`
+
 
 ---
 
@@ -77,7 +80,7 @@ Return: list[Speaker]
 | `GEMINI_API_KEY`     | ✅       | `your-google-api-key`               |
 | `GEMINI_MODEL`       | ✅       | `gemini-2.5-pro-exp-03-25`          |
 | `VECTOR_DB_PROVIDER`| ✅       | `qdrant`                             |
-| `EMBEDDINGS_MODEL`   | ✅       | `all-MiniLM-L6-v2`                   |
+| `EMBEDDINGS_MODEL`   | ✅       | `BAAI/bge-small-en`                   |
 | `SMTP_SERVER`        | ✅       | `smtp.gmail.com`                     |
 | `SMTP_PORT`          | ✅       | `587`                                |
 | `SENDER_EMAIL`       | ✅       | `example@gmail.com`                  |
@@ -137,4 +140,7 @@ volumes:
   qdrant_storage:
     name: qdrant_storage
 ```
+## `Deploy services docker execute command:` 
+- ```docker-compose up -d --build```
+---
 
