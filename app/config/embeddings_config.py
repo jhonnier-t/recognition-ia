@@ -11,7 +11,6 @@ class FastEmbedService:
 
     def get_embedding(self, text: str) -> list:
         try:
-            # `embed()` devuelve un generador, usamos `next` para obtener el vector
             return next(self.embedder.embed([text]))
         except Exception as e:
             logger.exception(f"Failed to generate embedding: {e}")

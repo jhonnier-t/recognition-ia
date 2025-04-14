@@ -3,7 +3,7 @@ from datetime import datetime
 from fastapi import APIRouter, UploadFile, File, Form
 from fastapi.responses import JSONResponse
 
-from app.config.env_config import TO_EMAILS, COLLECTION
+from app.config.env_config import COLLECTION
 from app.config.template_config import read_email_template
 from app.modules.email_module import email_notifier
 from app.modules.embeddings_module import create_segments_point

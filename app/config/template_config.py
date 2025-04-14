@@ -1,6 +1,6 @@
 import os
 
-from jinja2 import Template, Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader
 
 from app.config.exception_handler_config import ErrorHandler
 
