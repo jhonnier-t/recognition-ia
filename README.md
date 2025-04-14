@@ -27,6 +27,7 @@ Rationale Vector DB
 - `Open source` and has an official and `lighter Docker image`.
 - Excellent support for semantic search with `metadata filtering`.
 - Compatible with `OpenAI`, `fastembed`, `HuggingFace`, etc. embeddings.
+- **HOST**:`http://localhost:6333/dashboard#/collections`
 
 ---
 
