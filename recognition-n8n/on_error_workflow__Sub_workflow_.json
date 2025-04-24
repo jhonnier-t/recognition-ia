@@ -2,29 +2,18 @@
   "name": "on_error_workflow [Sub workflow]",
   "nodes": [
     {
-      "parameters": {},
-      "type": "n8n-nodes-base.errorTrigger",
-      "typeVersion": 1,
-      "position": [
-        -620,
-        -380
-      ],
-      "id": "8f7e7dec-e65f-4a75-9c39-ce9aea87f443",
-      "name": "Error Trigger"
-    },
-    {
       "parameters": {
-        "sendTo": "jhonnier98t@gmail.com",
+        "sendTo": "={{ $json.email }}",
         "subject": "Process Messages",
         "emailType": "text",
-        "message": "=ERROR:\nRequest ID: {{ $json.workflow.id }}\nMessage: {{ $json.execution.error.message }}",
+        "message": "=❌ERROR:\nRequest ID: {{ $execution.id }}\nMessage: {{ $('ExecutedErrorWorkflow').first().json.error }}\n",
         "options": {}
       },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        -420,
-        -380
+        -140,
+        -180
       ],
       "id": "06a578b9-b978-471f-acc6-4854e724e8d7",
       "name": "Gmail",
@@ -35,11 +24,58 @@
           "name": "Gmail account"
         }
       }
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -500,
+        -180
+      ],
+      "id": "5b4ec607-9ca2-426b-8058-0e7d594038e1",
+      "name": "ExecutedErrorWorkflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7ec77440-8eea-426a-9df2-d8f405403a7f",
+              "name": "email",
+              "value": "={{ $('ExecutedErrorWorkflow').item.json.email }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -320,
+        -180
+      ],
+      "id": "047327d5-1eb4-4b6b-bdff-fa6032be557f",
+      "name": "Edit Fields"
     }
   ],
   "pinData": {},
   "connections": {
-    "Error Trigger": {
+    "ExecutedErrorWorkflow": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
       "main": [
         [
           {
@@ -55,7 +91,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "39db98ef-21f9-4ab7-ba00-4c1d00ecb52c",
+  "versionId": "d1e5a89f-1080-4b91-a980-17256b979eea",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "09119e072b265a070a9e89a4f91c8b8a61e1da10e31a28aa9e58f1b9747b70e5"
