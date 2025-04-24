@@ -1,0 +1,84 @@
+{
+  "name": "Chat GPT Worflow [Sub workflow]",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -560,
+        0
+      ],
+      "id": "86e1b3b1-f054-45d6-90e7-2a05eacf08d3",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/audio/transcriptions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "data",
+              "value": "{{$input.first().json.mimetype}}"
+            },
+            {
+              "name": "model",
+              "value": "gpt-4o-mini-transcribe"
+            },
+            {
+              "name": "prompt",
+              "value": "gpt-4o-mini-prompt"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -320,
+        0
+      ],
+      "id": "624d27c6-c621-45d1-b35e-e3ea67a4430c",
+      "name": "HTTP Request",
+      "credentials": {
+        "openAiApi": {
+          "id": "rq98jLMfT6LdLjBt",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "cda0c00c-5248-4df4-ad9c-eeb9339d4a50",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "09119e072b265a070a9e89a4f91c8b8a61e1da10e31a28aa9e58f1b9747b70e5"
+  },
+  "id": "fzVWoBZxMwZPLDB8",
+  "tags": []
+}

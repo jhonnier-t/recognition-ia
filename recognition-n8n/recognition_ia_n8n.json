@@ -1,0 +1,599 @@
+{
+  "name": "recognition-ia-n8n",
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "insert",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "=file[{{ $('OnFormSubmission').item.json.data.filename }}][{{ $execution.id }}]",
+          "mode": "id"
+        },
+        "embeddingBatchSize": 500,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.1,
+      "position": [
+        540,
+        380
+      ],
+      "id": "1453f8ab-4da8-4f34-b9a1-84dc4a6b1568",
+      "name": "Qdrant Vector Store1",
+      "executeOnce": false,
+      "credentials": {
+        "qdrantApi": {
+          "id": "D4JifWb7ZkwFEyaI",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/embedding-001"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        520,
+        620
+      ],
+      "id": "04ce820d-90cc-40aa-87cb-b6bb4ea0d16f",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "DiJKoThwvvzg3zzN",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "text",
+                "value": "={{ $('ToJson').item.json.text }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        600,
+        520
+      ],
+      "id": "f5e309f3-62cc-46b3-a3f4-36b7f110995b",
+      "name": "Default Data Loader1"
+    },
+    {
+      "parameters": {
+        "chunkSize": 3000,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        720,
+        640
+      ],
+      "id": "5fc8a89a-491c-4d7a-bc8c-5f5d5fb4efd2",
+      "name": "Recursive Character Text Splitter1"
+    },
+    {
+      "parameters": {
+        "sendTo": "jhonnier98t@gmail.com",
+        "subject": "Process executed sucessfully",
+        "emailType": "text",
+        "message": "=✅  Process executed sucessfully\nRequest ID: {{ $execution.id }}\nTranscribed text:\n{{ $('ToJson').all().toJsonString()}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        960,
+        380
+      ],
+      "id": "2648f50f-7b92-4b21-a7b9-20e4c1941920",
+      "name": "Gmail1",
+      "webhookId": "e78fc07f-5aef-4d39-b0cf-a3120a949d5d",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0CLHk7N8thV9LFnj",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### 3. 🔀 Read FILE\n\n- Read file from a form posted by n8n\n- set constant prompt\n\n\n",
+        "height": 440,
+        "width": 480,
+        "color": 6
+      },
+      "id": "5e8eae59-7ea4-4828-ab8d-5fed4865f4b7",
+      "name": "Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -900,
+        240
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "### 2. 🧩 Qdrant Vector DB\n\nRationale Vector DB\n\n- Easy to use and integrates very well with `Python` and `fastembed`.\n- Allows to `store structured metadata` along with each vector (great for storing: filename, timestamp, speaker, etc.).\n- `Open source` and has an official and `lighter Docker image`.\n- Excellent support for semantic search with `metadata filtering`.\n- Compatible with `OpenAI`, `fastembed`, `HuggingFace`, etc. embeddings.\n- **HOST**:`http://localhost:6333/dashboard#/collections`",
+        "height": 800,
+        "width": 420,
+        "color": 5
+      },
+      "id": "8bfb5255-005c-4cf9-acf4-05febe112248",
+      "name": "Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        460,
+        -20
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "formTitle": "Recognition APP",
+        "formDescription": "Recognition APP integration",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "data",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "acceptFileTypes": ".ogg, .m4v, .mp3",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "model",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "gemini"
+                  },
+                  {
+                    "option": "openia"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -880,
+        420
+      ],
+      "id": "95a455b7-f0b8-4681-80c4-2fc1a8b42d11",
+      "name": "OnFormSubmission",
+      "webhookId": "3e40bf16-57bb-4536-bfdd-647ce8d5ce5a"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3774ad40-c983-4c07-b17a-0cd9edca0dc4",
+              "name": "prompt",
+              "value": "=Quiero que transcribas el siguiente audio enviado en base 64 en español y segmentes por hablante si es posible.\nSin texto adicional ni explicaciones. Devuélveme la respuesta en el siguiente formato:\nSpeaker = {\"speaker\": str, \"time_stamp\": \"00:00:00.248\", \"text\": str},\nReturn: list[Speaker]\n⚠️ IMPORTANTE:\nNo pongas la palabra json dentro de bloques de código (nada de json, ni ).\nNo pongas las comillas hacia atrás ``` en el objeto JSON.\nNo pongas salto de línea \\n en el objeto JSON.\nNo devuelvas caracteres de escape (nada de \", \\n, etc).\nNo agregues ningún texto antes ni después del objeto JSON.\nNo expliques nada, ni digas “Aquí tienes la transcripción” ni nada parecido.\nDevuelve solo la lista de objetos Speaker como JSON válido, limpio y directo.\nEl texto debe estar sin errores y con puntuación correcta.",
+              "type": "string"
+            },
+            {
+              "id": "420c48d8-7a4f-43a1-b9e7-781a8ab87416",
+              "name": "data",
+              "value": "={{ $json.data }}",
+              "type": "string"
+            },
+            {
+              "id": "900fc683-99e0-4e3c-9fec-ade0ad94a065",
+              "name": "mimetype",
+              "value": "={{ $('OnFormSubmission').item.json.data.mimetype }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -560,
+        420
+      ],
+      "id": "482c5b21-e2db-4e19-8b6c-42b4fd02d1ef",
+      "name": "MappingPrompt"
+    },
+    {
+      "parameters": {
+        "jsCode": "const json = JSON.parse($input.first().json.candidates[0].content.parts[0].text)\nconst filename = $('OnFormSubmission').first().json.data.filename;\njson.map(j=>j['filename']=filename)\n\nreturn json"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        280,
+        440
+      ],
+      "id": "a5067a1c-aa7d-4edd-b21c-f157421b8a0e",
+      "name": "ToJson"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "V5UmZPtrUmonDIzF",
+          "mode": "list",
+          "cachedResultName": "Gemini [Sub workflow]"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -40,
+        320
+      ],
+      "id": "27953938-baf0-40a5-964a-bb9749c99565",
+      "name": "Gemini Sub Workflow",
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "fzVWoBZxMwZPLDB8",
+          "mode": "list",
+          "cachedResultName": "Chat GPT Worflow [Sub workflow]"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -40,
+        520
+      ],
+      "id": "a82e5f0e-e5fa-4ae6-ad23-f6fdb6147c61",
+      "name": "OpenIA sub workflow",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {
+          "encoding": "base64"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        420
+      ],
+      "id": "227e10e7-492f-44a5-a471-4483361b1224",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('OnFormSubmission').item.json.model }}",
+                    "rightValue": "gemini",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "55eb63cb-26e6-4bfc-9689-5e9ce0db4183"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "gemini"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "24f9e780-11b4-4ca5-b1e2-2ca2da6c6de2",
+                    "leftValue": "={{ $('OnFormSubmission').item.json.model }}",
+                    "rightValue": "openia",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "openia"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -340,
+        420
+      ],
+      "id": "123240d1-3116-42e9-8be1-fd18ab54c8d7",
+      "name": "Switch model"
+    },
+    {
+      "parameters": {
+        "content": "### 2. 🧠 Transcribe Text with Model\n\n",
+        "height": 440,
+        "width": 380,
+        "color": 5
+      },
+      "id": "54c0e181-7041-434a-8573-49ea2cc207cb",
+      "name": "Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -160,
+        240
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "WlFKITxFT0SFA5bt",
+          "mode": "list",
+          "cachedResultName": "on_error_workflow [Sub workflow]"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        200,
+        0
+      ],
+      "id": "492cdab1-2e53-4afe-8ad1-46fea5657040",
+      "name": "Execute error [Sub workflow]"
+    },
+    {
+      "parameters": {
+        "errorMessage": "={{ $('OpenIA sub workflow').item.json.error }}"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        340,
+        0
+      ],
+      "id": "a157e2b5-adfa-459f-ae6e-c649a0434359",
+      "name": "Stop and Error"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Qdrant Vector Store1": {
+      "main": [
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "Qdrant Vector Store1",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter1": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader1",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OnFormSubmission": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MappingPrompt": {
+      "main": [
+        [
+          {
+            "node": "Switch model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ToJson": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Sub Workflow": {
+      "main": [
+        [
+          {
+            "node": "ToJson",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Execute error [Sub workflow]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenIA sub workflow": {
+      "main": [
+        [
+          {
+            "node": "ToJson",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Execute error [Sub workflow]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "MappingPrompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch model": {
+      "main": [
+        [
+          {
+            "node": "Gemini Sub Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "OpenIA sub workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute error [Sub workflow]": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "478cac80-18ed-4b63-a878-d083218e0ae9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "09119e072b265a070a9e89a4f91c8b8a61e1da10e31a28aa9e58f1b9747b70e5"
+  },
+  "id": "uU5YlX86ErS50eQX",
+  "tags": []
+}

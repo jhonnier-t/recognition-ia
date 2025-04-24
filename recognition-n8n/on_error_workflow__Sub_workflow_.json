@@ -1,0 +1,65 @@
+{
+  "name": "on_error_workflow [Sub workflow]",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -620,
+        -380
+      ],
+      "id": "8f7e7dec-e65f-4a75-9c39-ce9aea87f443",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "sendTo": "jhonnier98t@gmail.com",
+        "subject": "Process Messages",
+        "emailType": "text",
+        "message": "=ERROR:\nRequest ID: {{ $json.workflow.id }}\nMessage: {{ $json.execution.error.message }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -420,
+        -380
+      ],
+      "id": "06a578b9-b978-471f-acc6-4854e724e8d7",
+      "name": "Gmail",
+      "webhookId": "3bce87ca-8a20-43bc-b89b-da0d89167c80",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0CLHk7N8thV9LFnj",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "39db98ef-21f9-4ab7-ba00-4c1d00ecb52c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "09119e072b265a070a9e89a4f91c8b8a61e1da10e31a28aa9e58f1b9747b70e5"
+  },
+  "id": "WlFKITxFT0SFA5bt",
+  "tags": []
+}

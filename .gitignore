@@ -15,3 +15,5 @@ __pycache__/
 models/
 n8n_data
 logs
+test_main.http
+.idea

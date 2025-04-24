@@ -1,0 +1,94 @@
+{
+  "name": "Gemini [Sub workflow]",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const instructions = $input.first().json.prompt;\nconst audioMimeType = $input.first().json.mimetype;\nconst audioBase64 = $input.first().json.data;\n\nconst payload = {\n  \"contents\": [\n    {\n      \"role\": \"user\",\n      \"parts\": [\n          {\n              \"text\": instructions\n          },\n          {\n              \"inline_data\": {\n                  \"mime_type\": audioMimeType,\n                  \"data\": audioBase64\n              }\n          }\n      ]\n    }          \n  ]\n}\nreturn payload;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -180,
+        -160
+      ],
+      "id": "74bcb020-3334-4f1b-9e78-2c6204c0a621",
+      "name": "GenerateRequest"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-exp-03-25:generateContent",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        40,
+        -160
+      ],
+      "id": "db242c3f-4d77-47aa-9cad-75f5f088555d",
+      "name": "RequestGemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "DiJKoThwvvzg3zzN",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -400,
+        -160
+      ],
+      "id": "39a29ab4-d163-4648-a958-b58cfa354213",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "GenerateRequest": {
+      "main": [
+        [
+          {
+            "node": "RequestGemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "GenerateRequest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fa076c87-8dc4-482f-ab55-a88886c44e8e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "09119e072b265a070a9e89a4f91c8b8a61e1da10e31a28aa9e58f1b9747b70e5"
+  },
+  "id": "V5UmZPtrUmonDIzF",
+  "tags": []
+}
